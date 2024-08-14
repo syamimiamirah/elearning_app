@@ -18,7 +18,13 @@
                 </div>
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('students.index')" :active="request()->routeIs('students.index')">
-                        {{ __('Student') }}
+                        {{ __('Client Side Student') }}
+                    </x-nav-link>
+                </div>
+
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('serverside.index')" :active="request()->routeIs('serverside.index')">
+                        {{ __('Server Side Student') }}
                     </x-nav-link>
                 </div>
             </div>
