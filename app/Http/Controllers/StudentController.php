@@ -50,7 +50,10 @@ class StudentController extends Controller
                 'address' => $request->address,
                 'user_id' => Auth::id(),
             ]);
-            // Redirect to the students index page with a success message
+            
+            if ($request->expectsJson()) {
+                return response()->json(['success' => true, 'message' => 'Student added successfully.']);
+            }
             return redirect()->route('students.index')->with('success', 'New student record added successfully.');
         
     }
