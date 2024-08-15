@@ -42,20 +42,14 @@ class ServerSideController extends Controller
         // Add the action column data
         $data = $students->map(function($student) {
             return [
-                'DT_RowIndex' => $student->id, // or any other unique identifier
+                'id' => $student->id, // or any other unique identifier
                 'name' => $student->name,
                 'matric_no' => $student->matric_no,
                 'dob' => $student->dob,
                 'address' => $student->address,
                 'phone' => $student->phone,
                 'faculty' => $student->faculty,
-                'action' => '<div style="display: flex; gap: 5px;"><a href="' . route('serverside.edit', $student->id) . '" class="edit btn btn-warning">Edit</a> 
-                            <form action="' . route('serverside.destroy', $student->id) . '" method="POST" style="display:inline-block;">
-                            ' . csrf_field() . '
-                            ' . method_field('DELETE') . '
-                            <button type="submit" class="delete btn btn-danger" onclick="return confirm(\'Are you sure you want to delete this student?\')">Delete</button>
-                            </form>
-                            </div>'
+                'action' => $student->id,
             ];
         });
 
@@ -76,8 +70,8 @@ class ServerSideController extends Controller
 
     public function show($id)
     {
-        $student = Student::findOrFail($id); // Fetch the note by ID
-        return view('serverside.show', compact('student'));
+        return Student::findOrFail($id); // Fetch the note by ID
+        //return view('serverside.show', compact('student'));
     }
 
     public function store(Request $request) {
@@ -89,6 +83,14 @@ class ServerSideController extends Controller
                 'phone' => 'required|string|max:15',
                 'address' => 'nullable|string',
             ]);
+
+            // Student::updateOrCreate(['id'=>$request->student_id],
+            // ['name' => $request->name,
+            //     'matric_no' => $request->matric_no,
+            //     'dob' => $request->dob,
+            //     'faculty' => $request->faculty,
+            //     'phone' => $request->phone, 
+            //     'address' => $request->address,]);
     
             Student::create([
                 'name' => $request->name,
@@ -100,14 +102,19 @@ class ServerSideController extends Controller
                 'user_id' => Auth::id(),
             ]);
             // Redirect to the serverside index page with a success message
-            return redirect()->route('serverside.index')->with('success', 'New student record added successfully.');
-        
+            //return redirect()->route('serverside.index')->with('success', 'New student record added successfully.');
+            return response()->json(['success' => 'Student details saved successfully.']);
     }
 
     public function edit($id)
     {
-        $student = Student::findOrFail($id); // Fetch the note by ID
-        return view('serverside.edit', compact('student')); // Return the edit view with note data
+        $student = Student::find($id);
+
+        // Check if the student exists
+        if (!$student) {
+            return response()->json(['error' => 'Student not found'], 404);
+        }
+        return response()->json($student);
     }
     
     public function update(Request $request, Student $student)
@@ -134,17 +141,19 @@ class ServerSideController extends Controller
             'address' => $request->address,
         ]);
 
-        return redirect()->route('serverside.index')->with(['success' => 'Student details updated successfully.']);
+        return response()->json(['success' => 'Student details updated successfully.']);
     }
 
-    public function destroy(Request $request, Student $student)
+    public function destroy($id)
     {
-        $studentIds = $request->input('selected_students', []);
-        if (!empty($studentIds)) {
-            Student::whereIn('id', $studentIds)->delete();
-            return redirect()->route('serverside.index')->with('success', 'Selected students deleted successfully.');
+        $student = Student::find($id);
+        if ($student) {
+            $student->delete();
+            return response()->json(['success' => 'Student details deleted successfully.']);
+        } else {
+            return response()->json(['error' => 'Student not found.'], 404);
         }
-        return redirect()->route('serverside.index')->with('error', 'No students selected for deletion.');
     }
+
 
 }

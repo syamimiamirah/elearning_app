@@ -42,8 +42,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/serverside/{student}/show', [ServerSideController::class, 'show'])->name('serverside.show');
     Route::get('/serverside/create', [ServerSideController::class, 'create'])->name('serverside.create');
     Route::post('/serverside', [ServerSideController::class, 'store'])->name('serverside.store');
-    Route::delete('/serverside/delete', [ServerSideController::class, 'destroy'])->name('serverside.destroy');
-    Route::patch('/serverside/{student}', [ServerSideController::class, 'update'])->name('serverside.update');
+    Route::delete('/serverside/{student}', [ServerSideController::class, 'destroy'])->name('serverside.destroy');
+    Route::put('/serverside/{student}', [ServerSideController::class, 'update'])->name('serverside.update');
     Route::get('/serverside/{student}/edit', [ServerSideController::class, 'edit'])->name('serverside.edit'); 
 });
 
